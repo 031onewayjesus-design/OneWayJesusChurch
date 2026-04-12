@@ -459,17 +459,6 @@ footer{background:#060D1B;padding:72px 24px 36px;}
 @media(max-width:720px){section{padding:72px 20px;}.nav-links{display:none;}.hamburger{display:flex;}.worship-grid{grid-template-columns:1fr;}.values-row{grid-template-columns:1fr;}.offering-cards{grid-template-columns:1fr;}.footer-top{grid-template-columns:1fr;}.hero-btns{flex-direction:column;align-items:center;}.hero-btns a,.hero-btns button{min-width:220px;justify-content:center;}.boards-flex{grid-template-columns:1fr;}#adminPanel{width:100%;right:-100%;}.hero-logo-wrap{flex-direction:column;gap:8px;}.hero-logo-text{text-align:center;}.intro-visual-wrap{display:block!important;width:100%;max-width:360px;}.intro-img-card{display:block!important;min-height:420px;}.intro-photo-placeholder,.intro-photo-placeholder img{display:block!important;visibility:visible!important;opacity:1!important;}.intro-accent-card,.intro-accent-card2{z-index:4;}}
 @media(max-width:480px){.gallery-grid{grid-template-columns:1fr 1fr;gap:8px;}.float-btns{bottom:16px;right:16px;}.back-top-btn{display:none;}.ap-row{grid-template-columns:1fr;}.intro-visual-wrap{max-width:100%;}.intro-img-card{min-height:360px;}}
 </style>
-
-<style>
-/* 모바일 담임목사 사진 강제 표시 */
-@media(max-width:768px){
-  .intro-visual-wrap{display:block!important;width:100%;max-width:100%;}
-  .intro-img-card{display:block!important;min-height:300px;width:100%;}
-  #pastorPhotoWrap{display:block!important;visibility:visible!important;opacity:1!important;width:100%;height:100%;}
-  #pastorPhotoWrap img{display:block!important;width:100%;height:100%;object-fit:cover;}
-  .intro-accent-card, .intro-accent-card2{display:none!important;}
-}
-</style>
 </head>
 <body>
 
@@ -1427,6 +1416,15 @@ function hydrateCmsData(data){
   } finally {
     CMS_REMOTE.loading=false;
   }
+  // 화면에 즉시 반영
+  try{ loadLogo(); } catch(e){}
+  try{ loadMap(); } catch(e){}
+  try{ loadPastorPhoto(); } catch(e){}
+  try{ loadInfo(); } catch(e){}
+  try{ renderBoards(); } catch(e){}
+  try{ renderBulletin(); } catch(e){}
+  try{ renderSermons(); } catch(e){}
+  try{ renderGallery(); } catch(e){}
 }
 async function loadRemoteCMS(){
   try{
