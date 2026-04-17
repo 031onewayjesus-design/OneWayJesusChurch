@@ -44,8 +44,12 @@ async function getYoutubeTitle(url) {
   };
 }
 
+function getPassword() {
+  return process.env.CMS_ADMIN_PASSWORD || "1234";
+}
+
 function isAuthorized(body) {
-  const required = process.env.CMS_ADMIN_PASSWORD || "1234";
+  const required = getPassword();
   return body?.token === required || body?.password === required;
 }
 
@@ -74,7 +78,8 @@ export default async (req) => {
     if (!isAuthorized(body)) {
       return json({ ok: false, error: "비밀번호가 올바르지 않습니다" }, 401);
     }
-    return json({ ok: true });
+    // 비밀번호를 토큰으로 반환 (클라이언트가 저장 시 사용)
+    return json({ ok: true, token: getPassword() });
   }
 
   if (!isAuthorized(body)) {
