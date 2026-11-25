@@ -1528,7 +1528,8 @@ async function syncRemoteCMS(force=false){
 /* ══════ 초기화 ══════ */
 window.addEventListener('DOMContentLoaded',async ()=>{
   await loadRemoteCMS();
-  loadLogo(); loadMap(); loadPastorPhoto(); loadInfo();
+  try{ loadLogo(); } catch(e){}
+  loadMap(); loadPastorPhoto(); loadInfo();
   renderBoards(); renderBulletin(); renderSermons(); renderGallery();
   initFadeIn(); initNav();
   document.querySelectorAll('[data-edit]').forEach(el=>{
@@ -1700,12 +1701,14 @@ function loadAdminForms(){
 function applyInfo(){
   const g=id=>document.getElementById(id)?.value||'';
   const liveMode=document.getElementById('set-live-mode')?.checked||false;
+  const prev=(cfgGet('church_info')||{}).media||{};
   const info={
     pastorName:g('set-pastor-name'),pastorBio:g('set-pastor-bio'),churchYears:g('set-church-years'),
     address:g('set-address'),phone:g('set-phone'),email:g('set-email'),transit:g('set-transit'),
     bank1:g('set-bank1'),account1:g('set-account1'),bank2:g('set-bank2'),account2:g('set-account2'),
     youtube:g('set-youtube'),mapurl:g('set-mapurl'),
     media:{
+      ...prev,
       channelUrl:g('set-yt-channel'),
       liveUrl:g('set-yt-live'),
       liveEmbedUrl:g('set-yt-live-embed'),
@@ -1791,6 +1794,8 @@ function mergeMediaConfig(info){
     channelUrl:saved.channelUrl||info.youtube||d.channelUrl,
     liveUrl:saved.liveUrl||d.liveUrl,
     liveEmbedUrl:saved.liveEmbedUrl||'',
+    weeklySermonUrl:saved.weeklySermonUrl||'',
+    weeklySermonTitle:saved.weeklySermonTitle||'',
     liveMode:!!saved.liveMode,
     mainTitle:saved.mainTitle||d.mainTitle,
     mainUrl:saved.mainUrl||'',
@@ -1850,7 +1855,7 @@ function loadMediaInputs(info){
   set('set-weekly-sermon-url',media.weeklySermonUrl||'');
   const cb=document.getElementById('set-live-mode'); if(cb) cb.checked=!!media.liveMode;
   set('set-media-main-title',media.mainTitle); set('set-media-main-url',media.mainUrl);
-  media.items.forEach((item,idx)=>{ set(`set-sermon-${idx+1}-title`,item.title); set(`set-sermon-${idx+1}-url`,item.url); });
+  media.items.forEach((item,idx)=>{ set(`set-media-${idx+1}-title`,item.title); set(`set-media-${idx+1}-url`,item.url); });
 }
 function renderSermons(){
   const info=cfgGet('church_info')||{};
@@ -1960,7 +1965,7 @@ async function syncWeeklySermon(){
     const json=await res.json();
     if(!res.ok || !json.ok) throw new Error(json.error||'동기화 실패');
     const info=cfgGet('church_info')||{};
-    const media=defaultSermons(info.media);
+    const media=mergeMediaConfig(info);
     media.weeklySermonUrl=url;
     media.weeklySermonTitle=json.title||'이번주 말씀';
     media.mainTitle=json.title||media.mainTitle;
@@ -1975,7 +1980,7 @@ async function syncWeeklySermon(){
 
     renderBoards();
     renderSermons();
-    applyAdminToForm();
+    loadAdminForms();
     await syncRemoteCMS(true);
     cmsBadge('이번주 말씀 자동 연결 완료',true);
     toast('🎬 이번주 말씀과 제목이 자동 연결되었습니다');
