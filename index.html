@@ -1747,7 +1747,8 @@ function loadInfo(){
   const transit=info.transit||'1호선 지행역에서 도보 이용';
   const yt=info.youtube||'https://www.youtube.com';
   const MAP_PLACE='https://place.map.kakao.com/731657644';
-  const mapurl=(info.mapurl && !/^https?:\/\/map\.kakao\.com\/\?q=/.test(info.mapurl)) ? info.mapurl : MAP_PLACE;
+  const _mu=info.mapurl||'';
+  const mapurl=(_mu && _mu.indexOf('map.kakao.com/?q=')===-1) ? _mu : MAP_PLACE;
   const st=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
   st('pastorName',pn); st('pastorBio',pb);
   const av=document.getElementById('pastorAv'); if(av) av.textContent=pn.charAt(0)||'박';
